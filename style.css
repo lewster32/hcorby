@@ -1,0 +1,135 @@
+html, body {
+  background: #2c3636;
+  color: #ddd;
+  text-align: center;
+  font-size: 110%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #94c8d7;
+
+}
+
+a {
+  color: #94c8d7;
+}
+
+#assets {
+  display: none;
+}
+
+#message, #questionnaires-message {
+  color: #5f5;
+}
+
+#message.error, #questionnaires-message.error {
+  color: #f55;
+}
+
+label {
+  color: #94c8d7;
+}
+
+#confirm, #debrief, #questionnaires {
+  width: 864px;
+  margin: 0 auto;
+  text-align: left;
+  padding: 8px 16px;
+}
+
+#questionnaires p {
+  font-size: 15pt;
+}
+
+#questionnaires table {
+  width: 100%;
+  table-layout: fixed;
+  
+}
+#questionnaires table th {
+  padding: 0 8px 8px 0;
+  vertical-align: bottom;
+  font-size: 12pt;
+  color: #86bdcf;
+}
+#questionnaires table td {
+  padding-bottom: 8px;
+}
+#questionnaires table tr.answered td {
+  color: #5f5;
+  position: relative;
+}
+#questionnaires table tr.answered td:first-child:before {
+  content: "✓";
+  position: absolute;
+  left: -1em;
+  top: 10%;
+}
+#questionnaires table tr td:hover label {
+  color: #fff;
+}
+#questionnaires table tr:not(.noborder) td {
+  border-top: 1px solid #fff;
+  padding: 8px 0;
+}
+
+#questionnaires table tr.noborder td {
+  padding: 0 8px;
+}
+
+input[type=checkbox], input[type=radio] {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-right: .5em;
+  color: #fff;
+  background-color: #000;
+}
+
+#game {
+  margin: 16px;
+  display: inline-block;
+  -webkit-transform-origin: 50% 0;
+          transform-origin: 50% 0;
+}
+
+#ageform {
+  position: absolute;
+  left: 50%;
+  top: 190px;
+  width: 400px;
+  margin-left: -200px;
+  text-align: center;
+}
+#ageform #age, input[type=text], button {
+  font-size: 30px;
+  padding: 10px;
+  border: 3px solid #86bdcf;
+  border-radius: 4px;
+  font-family: Georgia, serif;
+}
+#ageform #age, input[type=text] {
+  background: #000;
+  color: #fff;
+}
+#ageform #age:hover {
+  border-color: #fff;
+}
+button {
+  margin-left: 20px;
+  background-color: #777;
+  border-color: #777;
+  color: #222;
+  opacity: 0.5;
+}
+button.enabled {
+  opacity: 1;
+  cursor: pointer;
+  background-color: #86bdcf;
+  border-color: #86bdcf;
+  color: #000;
+}
+button.enabled:hover {
+  background-color: #fff;
+  border-color: #fff;
+}
