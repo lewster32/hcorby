@@ -7,7 +7,6 @@ var playerData = {
   gender: null,
   // even distribution of tests based on whether the game loaded at an odd or even second
   path: (Math.round(Date.now() * 0.001) % 2) + 1,
-  // path: 1,
   levels: {},
   questionnaires: {
     meta: {

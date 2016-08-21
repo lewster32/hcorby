@@ -46,22 +46,55 @@
 <html>
 <head>
   <title>Result data</title>
+  <style>
+    body, html {
+      font-family: sans-serif;
+      margin: .66em;
+      background-color: #fff;
+      color: #444;
+    }
+    .bugged {
+      color: #f00;
+    }
+
+    table, tr, td, th {
+      border: 0;
+    }
+    table {
+      width: 100%;
+      border-top: 1px solid #888;
+      border-bottom: 1px solid #888;
+    }
+    thead th {
+      border-bottom: 1px solid #888;
+    }
+    td, th {
+      padding: .66em .33em;
+      text-align: center;
+    }
+    tbody tr:hover {
+      background-color: #ffc !important;
+    }
+    tbody tr:nth-child(odd) {
+      background-color: #f2f2f2;
+    }
+  </style>
 </head>
 <body>
-  <p><a href="csv-results.php?p=<?php echo RESULTS_PASSWORD;?>">Download as CSV</a> - <?php echo count($data); ?> completed results (<?php echo get_invalid($data); ?> bugged, <?php echo get_ratio($data); ?> ratio of unbugged results)</p>
+  <p><a href="csv-results.php?p=<?php echo RESULTS_PASSWORD;?>">Download as CSV</a> - <?php echo count($data); ?> completed results (<span class="bugged"><?php echo get_invalid($data); ?> bugged</span>, <?php echo get_ratio($data); ?> ratio of unbugged results)</p>
   <table cellpadding="4" cellspacing="0" border="1">
     <thead>
       <tr>
         <th>Timestamp</th>
         <th>Time taken</th>
-        <th>Path</th>
+        <th>Cue</th>
         <th>Age</th>
         <th>Gender</th>
-        <th>Total Instrumental</th>
-        <th>Total Novel</th>
-        <th>SIR Total</th>
-        <th>OCIR Total</th>
-        <th>GAD-7 Total</th>
+        <th>Instrumental</th>
+        <th>Novel</th>
+        <th>SIR</th>
+        <th>OCIR</th>
+        <th>GAD-7</th>
         <th>IP</th>
       </tr>
     </thead>
@@ -72,7 +105,7 @@
   if ($data) {
     foreach ($data as $row) {
 ?>
-      <tr>
+      <tr<?php if (is_invalid($row)) { echo ' class="bugged"'; }?>>
 <?php
       echo "<td>" . date("Y-m-d H:i:s", $row['timestamp']) . "</td>";
       echo "<td>" . round(($row['endtime'] - $row['starttime']) / 1000) . "</td>";
