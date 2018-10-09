@@ -6,7 +6,7 @@ var playerData = {
   age: null,
   gender: null,
   // even distribution of tests based on whether the game loaded at an odd or even second
-  path: (Math.round(Date.now() * 0.001) % 2) + 1,
+  path: forcedPath || (Math.round(Date.now() * 0.001) % 2) + 1,
   levels: {},
   questionnaires: {
     meta: {
@@ -27,6 +27,8 @@ var playerData = {
     }
   }
 };
+
+    console.log(playerData.path);
 
 var totalPickups = {
   star: 0,
@@ -186,7 +188,7 @@ Hoard.Thanks.prototype = {
       fill: "#ffffff"
     }).anchor.set(0.5);
 
-    game.add.text(game.world.centerX, 110, "Please take a few minutes to complete the 3 short questionnaires,\nand submit your results to enter the prize draw to win\none of four £25 Amazon Gift Vouchers.", {
+    game.add.text(game.world.centerX, 110, "Please take a few minutes to complete the following\nshort questionnaires and submit your results.", {
       font: "23px Georgia",
       fill: "#94c8d7",
       align: "center"
@@ -555,12 +557,14 @@ Hoard.Questionnaires.prototype = {
 
     var self = this;
 
-    $(".questionnaire input[type=radio]").on("change", function() {
+    $(".questionnaire input").on("change", function() {
       var id = $(this).closest(".questionnaire").attr("id");
       if (self.checkQuestionnaire(id)) {
-        $("#" + id).find("button.continue").addClass("enabled").one("click", function() {
+        $("#" + id).find("button.continue").addClass("enabled").off("click").one("click", function() {
           if (self.saveQuestionnaire(id)) {
-            self.nextQuestionnaire();
+            setTimeout(function() {
+              self.nextQuestionnaire();
+            }, 250);
           }
         });
       }
@@ -579,7 +583,7 @@ Hoard.Questionnaires.prototype = {
       return false;
     }
     var output = [];
-    $("#" + id + " input[type=radio]:checked, #" + id + " input[type=range]").each(function() {
+    $("#" + id + " input[type=radio]:checked, #" + id + " input[type=range], #" + id + " input[type=hidden]").each(function() {
       output.push(parseInt($(this).val(), 10));
     });
     playerData.questionnaires[id].answers = output.join(",");
@@ -602,43 +606,13 @@ Hoard.GameOver.prototype = {
   createCookie: function() {
     var date = new Date();
     date.setTime(2147485547000);
-    document.cookie = "hcorby=1; expires=" + date.toGMTString() + "; path=/";
+    document.cookie = "hstudy=1; expires=" + date.toGMTString() + "; path=/";
   },
   debrief: function() {
     this.createCookie();
     $("#game").hide();
     $("#questionnaires").hide();
     $("#debrief").show();
-    $("#d-" + playerData.path).show();
-
-    /*
-    // email validation - not required
-    $("#email").on("input", function(e) {
-      var email = "";
-      email = $(this).val().replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
-      // if (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(email)) {
-
-      if (email.length > 1) {
-        $("#debrief button").addClass("enabled");
-      }
-      else {
-        $("#debrief button").removeClass("enabled");
-      }
-    });
-    */
-    var self = this;
-    $("#debrief button").addClass("enabled").on("click", function(e) {
-      e.preventDefault();
-      $el = $(this);
-      if ($el.hasClass("enabled")) {
-        $el.removeClass("enabled");
-        self.submitEmail(function() {
-          $("#email, #debrief button").remove();
-          $("#message").text("Your email address has been added to the prize draw.").show();
-        }, self);
-      }
-    });
-
   },
   submitResults: function(callback, context) {
     $.ajax("submitresults.php", {
@@ -651,12 +625,12 @@ Hoard.GameOver.prototype = {
           }
         }
         else {
-          alert("Submission error. Please contact d.h.corby@newcastle.ac.uk quoting the following message: '" + data.error + "'. The game will now restart.");
+          alert("Submission error. Please contact " + adminEmail + " quoting the following message: '" + data.error + "'. The game will now restart.");
           window.location.reload();
         }
       },
       error: function(xhr, status, err) {
-        alert("Problem connecting to the server. Please contact d.h.corby@newcastle.ac.uk quoting the following message: '" + status + " - " + err + "'. The game will now restart.");
+        alert("Problem connecting to the server. Please contact " + adminEmail + " quoting the following message: '" + status + " - " + err + "'. The game will now restart.");
         window.location.reload();
       }
     });
@@ -681,7 +655,7 @@ Hoard.GameOver.prototype = {
       },
       error: function(xhr, status, err) {
         $("#message")
-          .html('Sorry, there was an error (' + status + ' - ' + err + '). Please contact <a href="mailto:d.h.corby@newcastle.ac.uk?subject=Game%20error&body=Error%20' + encodeURIComponent(status) + '%20-%20' + encodeURIComponent(err) + '">d.h.corby@newcastle.ac.uk</a>')
+          .html('Sorry, there was an error (' + status + ' - ' + err + '). Please contact <a href="' + adminEmail + '?subject=Game%20error&body=Error%20' + encodeURIComponent(status) + '%20-%20' + encodeURIComponent(err) + '">' + adminEmail + '</a>')
           .addClass("error").show();
         $("#debrief button").addClass("enabled");
       }

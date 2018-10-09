@@ -1,32 +1,26 @@
+<?php 
+  require_once("config.php");
+?>
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8" />
 <head>
-  <title>HCorby</title>
+  <title>Study</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <?php
-    if (isset($_COOKIE['hcorby'])) {
+    if (isset($_COOKIE['hstudy'])) {
   ?>
   <div id="debrief">
-    <h1>Thank you for participating in the study!</h1>
-    <p>I am studying compulsive hoarding as my dissertation project and I am interested to see if collection behaviour can be elicited in the general population.</p>
-    <?php if ($_COOKIE['hcorby'] == "1") { ?>
-    <p>You received cues of scarcity and uncertainty (eg the world is full of people who lie, cheat and steal – in reality it is not). I am interested to see if the cues of scarcity/uncertainty have caused participants to collect more stars than they need, or collect more of the other novel items such as the moons, bows or buttons.</p>
-    <?php } else if ($_COOKIE['hcorby'] == "2") { ?>
-    <p>You were in the control condition, however, participants in the experimental condition received cues of scarcity through the game. I hope to see if the cues of scarcity have caused participants to collect more stars than they need, or collect more of the other novel items such as the moons, bows or buttons.</p>
-    <?php } ?>
-    <p>If you have any further questions about the study, please do not hesitate to contact the researcher: Helen Corby - <a href="mailto:d.h.corby@newcastle.ac.uk">d.h.corby@newcastle.ac.uk</a></p>
+    <h1>Thank you for playing!</h1>
   </div>
   <?php } else { ?>
 <div id="confirm">
   <h1>Study Information and Consent</h1>
-  <p>Thank you for agreeing to participate in my dissertation research. You will be offered the chance to enter a prize draw to win one of four £25 Amazon Gift Vouchers following completing the study by entering your email address.</p>
   <p>The study will consist of a short four-level single player game, followed by 3 short questionnaires. It should take no longer than 20 minutes to complete.</p>
   <p>You can withdraw from the study at any time, and your data will not be recorded (simply by closing your browser window). The data from the study will be analysed as part of my dissertation project to produce a report, but no individual players' data will be identified.</p>
   <p>To participate in the study you must be 18 years old or over, and live in the UK.</p>
-  <p>If you have any questions regarding the study, please contact the researcher: Helen Corby - <a href="mailto:d.h.corby@newcastle.ac.uk">d.h.corby@newcastle.ac.uk</a></p>
   <p><label for="age"><input type="checkbox" id="age" /> I confirm I am 18 years old or over</label></p>
   <p><label for="uk"><input type="checkbox" id="uk" /> I confirm I live in the UK</label></p>
   <p><label for="consent"><input type="checkbox" id="consent" /> I consent to participating in the study</label></p>
@@ -44,7 +38,7 @@
   
   <div id="meta" class="questionnaire" style="display: none">
     <p>Please select a response.</p>
-    <table cellpadding="0" cellspacing="0" border="0" data-expected="1">
+    <table cellpadding="0" cellspacing="0" border="0" data-expected="<?php if (FORCE_PATH == 0) { echo 1; } else { echo 0; } ?>">
       <tbody>
         <tr class="label">
           <td colspan="6">How often do you play video games? (e.g. computer, console, mobile phone, tablet, Facebook etc.)<br /><em>Move the slider to where you feel is appropriate for you.</em></td>
@@ -62,6 +56,7 @@
             <input style="width: 100%" type="range" size="8" id="meta-1" min="0" max="100" value="50" step="1" />
           </td>
         </tr>
+        <?php if (FORCE_PATH == 0) { ?>
         <tr class="label">
           <td colspan="6">Do you remember which introduction you received at the beginning of the game?</td>
         </tr>
@@ -82,6 +77,9 @@
             </label>
           </td>
         </tr>
+        <?php } else { ?>
+          <input type="hidden" name="meta-2" value="<?php echo FORCE_PATH; ?>" />
+        <?php } ?>
       </tbody>
     </table>
     <p style="text-align: center"><button class="continue">Continue</button></p>
@@ -1041,21 +1039,15 @@
   <p id="questionnaires-message" style="display: none"></p>
 </div>
 <div id="debrief" style="display: none">
-  <h1>Thank you for participating in the study!</h1>
-  <p>I am studying compulsive hoarding as my dissertation project and I am interested to see if collection behaviour can be elicited in the general population.</p>
-  <div id="d-1" style="display: none">
-    <p>You received cues of scarcity and uncertainty (e.g. there is not enough to go around – in reality there is enough). I am interested to see if the cues of scarcity/uncertainty have caused participants to collect more stars than they need, or collect more of the other novel items such as the moons, bows or buttons.</p>
-  </div>
-  <div id="d-2" style="display: none">
-    <p>You were in the control condition, however, participants in the experimental condition received cues of scarcity through the game. I hope to see if the cues of scarcity have caused participants to collect more stars than they need, or collect more of the other novel items such as the moons, bows or buttons.</p>
-  </div>
-  <p>If you have any further questions about the study, please do not hesitate to contact the researcher: Helen Corby - <a href="mailto:d.h.corby@newcastle.ac.uk">d.h.corby@newcastle.ac.uk</a></p>
-  <p>Thanks again for taking part in my study. If you would like to enter a prize draw to win one of four £25 Amazon Gift Vouchers, please enter a contact email address below:</p>
-  <p><input type="text" id="email" /> <button>Submit</button></p>
+  <h1>Thank you for playing!</h1>
   <p id="message" style="display: none"></p>
 </div>
 <script src="//cdnjs.cloudflare.com/ajax/libs/phaser/2.4.4/phaser.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script>
+  var forcedPath = <?php echo FORCE_PATH; ?>;
+  var adminEmail = '<?php echo ADMIN_EMAIL; ?>';
+</script>
 <script src="game.js"></script>
 <script src="dungeon.js"></script>
 <script src="underwater.js"></script>
