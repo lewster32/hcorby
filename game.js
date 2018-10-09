@@ -28,8 +28,6 @@ var playerData = {
   }
 };
 
-    console.log(playerData.path);
-
 var totalPickups = {
   star: 0,
   button: 0,
