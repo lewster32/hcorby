@@ -5,27 +5,10 @@ var debug = false;
 var playerData = {
   age: null,
   gender: null,
-  // even distribution of tests based on whether the game loaded at an odd or even second
-  path: forcedPath || (Math.round(Date.now() * 0.001) % 2) + 1,
+  // Always use 'control' path
+  path: 2,
   levels: {},
-  questionnaires: {
-    meta: {
-      answers: "",
-      total: 0
-    },
-    sir: {
-      answers: "",
-      total: 0
-    },
-    ocir: {
-      answers: "",
-      total: 0
-    },
-    gad7: {
-      answers: "",
-      total: 0
-    }
-  }
+  code: null
 };
 
 var totalPickups = {
@@ -78,21 +61,10 @@ Hoard.Gender.prototype = {
     }
     game.add.tileSprite(0, 0, game.world.width * 0.5, game.world.height * 0.5, 'sprites', 'floor').scale.set(2);
 
-    game.add.text(game.world.centerX, 90, "Are you male or female?", {
+    game.add.text(game.world.centerX, 90, "Select your character", {
       font: "38px Georgia",
       fill: "#ffffff"
     }).anchor.set(0.5);
-
-    game.add.text(game.world.centerX - 100, 320, "Male", {
-      font: "24px Georgia",
-      fill: "#94c8d7"
-    }).anchor.set(0.5);
-
-    game.add.text(game.world.centerX + 100, 320, "Female", {
-      font: "24px Georgia",
-      fill: "#94c8d7"
-    }).anchor.set(0.5);
-
 
     this.boy = game.add.sprite(game.world.centerX - 100, game.world.centerY, 'boy');
     this.boy.scale.set(2);
@@ -186,12 +158,6 @@ Hoard.Thanks.prototype = {
       fill: "#ffffff"
     }).anchor.set(0.5);
 
-    game.add.text(game.world.centerX, 110, "Please take a few minutes to complete the following\nshort questionnaires and submit your results.", {
-      font: "23px Georgia",
-      fill: "#94c8d7",
-      align: "center"
-    }).anchor.set(0.5, 0);
-
     game.time.events.add(Phaser.Timer.SECOND * 2, function() {
       var cont = game.add.text(game.world.centerX, 390, "Click to continue ➞", {
         font: "24px Georgia",
@@ -201,7 +167,7 @@ Hoard.Thanks.prototype = {
       game.add.tween(cont).to({alpha: 0.3}, 600, Phaser.Easing.Quadratic.InOut, true, 0, -1);
       game.add.tween(cont).from({x: -300}, 500, Phaser.Easing.Quadratic.Out, true);
       game.input.onDown.addOnce(function() {
-        game.state.start("Questionnaires");
+        game.state.start("GameOver");
       }, this);
     }, this);
   }
@@ -510,88 +476,6 @@ Hoard.Age.prototype = {
 };
 game.state.add('Age', Hoard.Age);
 
-Hoard.Questionnaires = function(game) { };
-
-Hoard.Questionnaires.prototype = {
-  preload: function() {
-    
-  },
-  create: function() {
-    
-  },
-  nextQuestionnaire: function() {
-    $(document).scrollTop(0);
-    $("#questionnaires .questionnaire").hide();
-    if (this.qOrder.length) {
-      this.qCurrent = this.qOrder.pop();
-      $("#questionnaire-page").text("page " + (4 - this.qOrder.length) + " of 4");
-      $("#" + this.qCurrent).show();
-
-      var self = this;
-    }
-    else {
-      game.state.start("GameOver");
-    }
-  },
-  init: function() {
-    this.qOrder = Phaser.ArrayUtils.shuffle(["gad7", "ocir", "sir"]);
-    this.qOrder.push("meta");
-
-    $("#game").hide();
-    $("#questionnaires").show();
-    this.nextQuestionnaire();
-
-    $("#meta input[type=range]").on("change", function() {
-      $(this).closest("tr").prev().prev().addClass("answered");
-    });
-
-    $("#sir input[type=radio], #meta input[type=radio]").on("change", function() {
-      $(this).closest("tr").prev().addClass("answered");
-    });
-
-    $("#gad7 input[type=radio], #ocir input[type=radio]").on("change", function() {
-      $(this).closest("tr").addClass("answered");
-    });
-
-    var self = this;
-
-    $(".questionnaire input").on("change", function() {
-      var id = $(this).closest(".questionnaire").attr("id");
-      if (self.checkQuestionnaire(id)) {
-        $("#" + id).find("button.continue").addClass("enabled").off("click").one("click", function() {
-          if (self.saveQuestionnaire(id)) {
-            setTimeout(function() {
-              self.nextQuestionnaire();
-            }, 250);
-          }
-        });
-      }
-    });
-  },
-  checkQuestionnaire: function(id) {
-    var selected = $("#" + id + " input[type=radio]:checked").length;
-    var expected = parseInt($("#" + id + " table").data("expected"), 10);
-    return (selected === expected);
-  },
-  saveQuestionnaire: function(id) {
-    $("#questionnaires-message").empty().removeClass("error").hide();
-    
-    if (!this.checkQuestionnaire(id)) {
-      $("#questionnaires-message").addClass("error").append("<p>Please answer all of the questions.</p>").show();
-      return false;
-    }
-    var output = [];
-    $("#" + id + " input[type=radio]:checked, #" + id + " input[type=range], #" + id + " input[type=hidden]").each(function() {
-      output.push(parseInt($(this).val(), 10));
-    });
-    playerData.questionnaires[id].answers = output.join(",");
-    playerData.questionnaires[id].total = output.reduce(function(a,b) { return parseInt(a,10) + parseInt(b,10); }, 0) ;
-    return true;
-  }
-};
-
-game.state.add('Questionnaires', Hoard.Questionnaires);
-
 Hoard.GameOver = function(game) { };
 Hoard.GameOver.prototype = {
   preload: function() {
@@ -602,14 +486,16 @@ Hoard.GameOver.prototype = {
     this.submitResults(this.debrief, this);
   },
   createCookie: function() {
-    var date = new Date();
-    date.setTime(2147485547000);
-    document.cookie = "hstudy=1; expires=" + date.toGMTString() + "; path=/";
+    // Only set the cookie if single play is enabled
+    if (singlePlay) {
+      var date = new Date();
+      date.setTime(2147485547000);
+      document.cookie = "hstudy=1; expires=" + date.toGMTString() + "; path=/";
+    }
   },
   debrief: function() {
     this.createCookie();
     $("#game").hide();
-    $("#questionnaires").hide();
     $("#debrief").show();
   },
   submitResults: function(callback, context) {
@@ -886,8 +772,8 @@ Player.prototype.collectPickup = function(pickup, pickupCounts, effects, levelPi
 };
 
 $(function() {  
-  $("#confirm input[type=checkbox]").on("change", function() {
-    if ($("#confirm input:not(:checked)").length === 0) {
+  $("#code").on("input keyup click", function() {
+    if ($("#code").val().trim().length > 0) {
       $("#confirm button").addClass("enabled");
     }
     else {
@@ -896,8 +782,11 @@ $(function() {
     $("#confirm button").one("click", function(e) {
       e.preventDefault();
       if ($(this).hasClass("enabled")) {
-        $("#confirm").remove();
-        game.state.start("Boot");
+        playerData.code = $("#code").val().trim();
+        setTimeout(function() {
+          $("#confirm").remove();
+          game.state.start("Boot");
+        }, 10);
       }
     });
   });

@@ -6,21 +6,18 @@ This study requires the following:
 * A PHP-enabled web server *(developed on an Apache server running PHP Version 5.6.19)*
 
 ## Installation
-Edit `config.php` to set your results password, filenames and environment values. Picking difficult to guess values for these will improve security by making it difficult to gain access to results data. A more comprehensive security system involving access control etc. has been eschewed for brevity and ease of deployment - *please do customise your version to use more advanced security measures as appropriate for your intended usage*.
+Edit `config.php` to set your results password, filenames, environment values and whether or not the 'single play' mode is enabled, preventing people on the same machine playing more than once. Picking difficult to guess values for these will improve security by making it difficult to gain access to results data. A more comprehensive security system involving access control etc. has been eschewed for brevity and ease of deployment - *please do customise your version to use more advanced security measures as appropriate for your intended usage*.
 
 The pseudo-random number generator seed used to generate each level can be set in the individual level `.js` files (`dungeon.js`, `underwater.js`, `meadow.js` and `sky.js`). Look for the line contaning `game.rnd.sow` and change the string to whatever you wish. 
 
 ## Usage
-Visitors will reach the index page whereby they will be able to take part in the study. Upon completion of the game and subsequent questionnaires, their results will be submitted and a cookie will be set to help limit their participation to once per browser *(N.B: no further checks will be made for multiple submissions, though IP addresses will be logged in the submission data)*.
+Visitors will reach the index page whereby they will be able to take part in the study. Upon completion of the game their results will be submitted and (if configured to do so) a cookie will be set to help limit their participation to once per browser *(N.B: no further checks will be made for multiple submissions, though IP addresses will be logged in the submission data)*.
 
 The visitor will get a further prompt upon results submission to submit an email address to enter a prize draw, and if the visitor wishes to participate, this info will be stored in a separate datafile.
 
 At any time, a simplified list of the results can be viewed by directing the browser to `/view-results.php?p=<your password>`.
 
 CSV formatted versions of the results and emails can be downloaded by directing the browser to `/csv-results.php?p=<your password>` and `/csv-emails.php?p=<your password>` respectively.
-
-## Known bugs
-* Some visitors (~15%) did not appear to be presented with all three questionnaires. This was not noticed until the study was underway, and so rather than change the code mid-study, a method for determining 'bugged' results was added to the `view-results.php` file.
 
 ## Acknowledgements
 
@@ -40,7 +37,7 @@ Makes use of the [jQuery 1.12.0](http://jquery.com) JavaScript framework.
 ## MIT License
 ----
 
-Copyright (c) 2016 L. Lane and D.H. Corby
+Copyright (c) 2016-2021 L. Lane and D.H. Corby
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
